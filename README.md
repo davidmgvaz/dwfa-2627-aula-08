@@ -13,6 +13,12 @@ Aula 08 (23/11/2026) · referência para o ponto 7 (CI) e o ponto 8 (contentores
 **PT** — Um `Dockerfile` *multi-stage* para o backend (uv no build; Gunicorn com *workers* Uvicorn no runtime, sem root), a mesma imagem para a API e para o *worker* Celery; um `frontend/Dockerfile` que constrói a SPA com Node e a serve com Nginx (`try_files` para o `index.html`; `/api/`, `/admin/`, `/static/` e `/ws/` encaminhados para o backend); um `compose.prod.yaml` com cinco serviços e uma só porta publicada; e um *workflow* de CI com três *jobs* (backend, frontend, imagens). Não é a única resposta certa: comparem com o vosso repositório.
 **EN** — A multi-stage backend `Dockerfile` (uv at build time; Gunicorn with Uvicorn workers at runtime, non-root), one image for the API and the Celery worker; a `frontend/Dockerfile` that builds the SPA with Node and serves it with Nginx; a `compose.prod.yaml` with five services and a single published port; and a CI workflow with three jobs (backend, frontend, images). Not the only correct answer: compare it with your own repository.
 
+## Onde ver o CI · Where to see the CI
+
+- **Actions** → cada *push* e cada *pull request* corre `backend`, `frontend` (em paralelo) e depois `images` · every push and pull request runs `backend` and `frontend` in parallel, then `images`.
+- **Pull requests** → o [#1](https://github.com/davidmgvaz/dwfa-2627-aula-08/pull/1) está verde; o [#2](https://github.com/davidmgvaz/dwfa-2627-aula-08/pull/2) está **vermelho de propósito**: a versão da API mudou e o `schema.yaml` não foi regenerado, e a verificação de desvio apanha-o · #1 is green; #2 is **red on purpose**: the API version changed and `schema.yaml` was not regenerated, and the drift check catches it.
+- O ficheiro é [`.github/workflows/ci.yml`](.github/workflows/ci.yml) · the file is `.github/workflows/ci.yml`.
+
 ```sh
 cp env.example .env                  # e editar · and edit: SECRET_KEY, POSTGRES_PASSWORD
 docker compose -f compose.prod.yaml up --build -d
