@@ -114,7 +114,7 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "ISLA DWFA e-commerce API",
     "DESCRIPTION": "Ficha 02 — domínio e-commerce exposto com Django REST Framework",
-    "VERSION": "0.4.0",
+    "VERSION": "0.8.0",
     "SERVE_INCLUDE_SCHEMA": False,
     # Ficha 04 (Aula 06): um componente para o pedido (`ProductRequest`, sem os read_only)
     # e outro para a resposta (`Product`, com tudo) — sem isto os tipos gerados do OpenAPI
