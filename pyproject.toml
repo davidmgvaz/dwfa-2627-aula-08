@@ -1,0 +1,50 @@
+[project]
+name = "isla-dwfa-ecommerce"
+version = "0.8.0"
+description = "DWFA 2026/27 · Aula 08 — CI, Docker, Nginx · referência do M2 · M2 reference"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.2,<5.3",
+    "django-environ>=0.14.0",
+    "psycopg[binary]>=3.2",
+    "djangorestframework>=3.16",
+    "django-filter>=25.1",
+    "drf-spectacular>=0.28",
+    "djangorestframework-simplejwt>=5.5",
+    "django-cors-headers>=4.7",
+    "argon2-cffi>=23.1",
+    # Ficha 05 (Aula 07): tarefas, tempo real, cache · tasks, real time, cache
+    "celery[redis]>=5.5",
+    "redis>=5.2",
+    "channels>=4.2",
+    "channels-redis>=4.2",
+    "daphne>=4.1",
+    # Aula 08: servidor de produção e ficheiros estáticos · production server and static files
+    "gunicorn>=23.0",
+    "uvicorn-worker>=0.3",
+    "websockets>=14.0",  # o Uvicorn precisa dela para /ws/ · Uvicorn needs it for /ws/
+    "whitenoise>=6.8",
+    # o `seed` usa as factories e corre na imagem de produção (dados de demonstração)
+    # `seed` uses the factories and runs inside the production image (demo data)
+    "factory-boy>=3.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-django>=4.9",
+    "ruff>=0.9",
+    "pytest-asyncio>=0.25",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "accounts", "core", "shop"]

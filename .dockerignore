@@ -1,0 +1,17 @@
+# O que NÃO entra no contexto do build · what stays OUT of the build context
+.git
+.github
+.venv
+.env
+.env.*
+!.env.example
+env.example
+__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+staticfiles
+frontend
+docs
+compose*.yaml
+Dockerfile

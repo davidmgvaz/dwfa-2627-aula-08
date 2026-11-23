@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dwfa
+          POSTGRES_USER: dwfa
+          POSTGRES_PASSWORD: dwfa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U dwfa -d dwfa"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.test
+      SECRET_KEY: ci-only-not-a-secret
+      DATABASE_URL: postgres://dwfa:dwfa@localhost:5432/dwfa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run python manage.py makemigrations --check --dry-run
+      # o schema commitado é o que a API produz? · is the committed schema what the API produces?
+      - run: uv run python manage.py spectacular --file schema.yaml && git diff --exit-code schema.yaml
+      - run: uv run pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      # os tipos commitados são os do schema? · do the committed types match the schema?
+      - run: npm run gen:api && git diff --exit-code src/api/schema.d.ts
+      - run: npm run type-check
+      - run: npx oxlint . && npx eslint .
+      - run: npm run test:unit -- --run
+      - run: npm run build-only
+
+  images:                      # as imagens constroem? · do the images build?
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose -f compose.prod.yaml build
+        env:
+          SECRET_KEY: ci-only-not-a-secret
+          POSTGRES_PASSWORD: ci-only-not-a-secret
